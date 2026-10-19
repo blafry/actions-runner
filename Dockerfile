@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 #
 # Self-hosted GitHub Actions runner image with extra build tooling.
-# Base: the official runner image (Ubuntu 24.04, user "runner", uid 1001).
+# Base: the official runner image as published by GitHub (user "runner").
 # Adds: Eclipse Temurin JDK, python3/zip/unzip, and on-demand Android SDK setup.
 #
 # The Android SDK is NOT redistributed in the published image (its license does not allow
@@ -9,7 +9,8 @@
 # before every job (ACTIONS_RUNNER_HOOK_JOB_STARTED), and it returns at once when the SDK is there.
 # For a private image, build with --build-arg BAKE_ANDROID_SDK=true to install it at build time.
 
-ARG RUNNER_VERSION=2.338.0
+# CI passes the exact upstream version; local builds follow the newest one.
+ARG RUNNER_VERSION=latest
 FROM ghcr.io/actions/actions-runner:${RUNNER_VERSION}
 
 ARG JDK_MAJOR=21

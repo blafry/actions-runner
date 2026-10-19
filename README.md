@@ -13,7 +13,7 @@ ghcr.io/blafry/actions-runner:latest
 
 | Component | Details |
 |---|---|
-| Base | The official runner image (Ubuntu 24.04, user `runner` uid 1001, Docker CLI, runner container hooks) |
+| Base | The official runner image as published by GitHub (user `runner`, Docker CLI, runner container hooks) |
 | JDK | Eclipse Temurin 21 from the Adoptium APT repository (`JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64`) |
 | Tools | `python3`, `zip`, `unzip`, `curl`, `jq`, `git` |
 | Android SDK | **Installed on first use** by `ensure-android-sdk` (see below) into `ANDROID_HOME=/home/runner/android-sdk` |
@@ -113,7 +113,7 @@ On small runners, limit Gradle in `~/.gradle/gradle.properties`, e.g.
 | Tag | Meaning |
 |---|---|
 | `latest` | Newest build |
-| `<runner version>` (e.g. `2.338.0`) | Newest build on that upstream runner version |
+| `<runner version>` (e.g. `2.x.y`) | Newest build on that upstream runner version |
 | `<runner version>-<YYYYMMDD>` | A specific build |
 
 The image is rebuilt:
