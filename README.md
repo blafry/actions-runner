@@ -35,6 +35,14 @@ Installing the SDK this way accepts the
 runs the runner. To bake the SDK into a **private** image instead, build it yourself with
 `--build-arg BAKE_ANDROID_SDK=true`.
 
+## Building locally
+
+`RUNNER_VERSION` is required (there is deliberately no default):
+
+```bash
+docker build --build-arg RUNNER_VERSION=2.x.y -t actions-runner .
+```
+
 ## Configuration
 
 | Variable | Default | Meaning |
@@ -116,13 +124,15 @@ On small runners, limit Gradle in `~/.gradle/gradle.properties`, e.g.
 | `<runner version>` (e.g. `2.x.y`) | Newest build on that upstream runner version |
 | `<runner version>-<YYYYMMDD>` | A specific build |
 
-The image is rebuilt:
+A build happens only when it is needed (`.github/scripts/resolve-versions.sh`):
 
-- weekly, when GitHub publishes a new upstream runner image (checked by digest);
-- on every change to the image on `master`;
-- on demand (`workflow_dispatch`, with an optional forced rebuild).
+- **Weekly**, the workflow compares the newest version of the official runner image (its newest
+  `x.y.z` tag) with the newest version built here, and builds only if upstream is newer.
+- **Pushes to `master`** that change the image (Dockerfile, `rootfs/`, scripts, the workflow)
+  always build, on the newest upstream version.
+- **On demand** (`workflow_dispatch`) it behaves like the weekly run; `force` builds anyway.
 
-Every build is smoke-tested before it is published (runner user, JDK, SDK setup, adb).
+Every build is smoke-tested before it is published (runner user and version, JDK, SDK setup, adb).
 
 ## License
 

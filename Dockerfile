@@ -9,8 +9,9 @@
 # before every job (ACTIONS_RUNNER_HOOK_JOB_STARTED), and it returns at once when the SDK is there.
 # For a private image, build with --build-arg BAKE_ANDROID_SDK=true to install it at build time.
 
-# CI passes the exact upstream version; local builds follow the newest one.
-ARG RUNNER_VERSION=latest
+# Required: the upstream runner version to build on, e.g. --build-arg RUNNER_VERSION=2.x.y.
+# CI resolves it (.github/scripts/resolve-versions.sh); there is deliberately no default.
+ARG RUNNER_VERSION
 FROM ghcr.io/actions/actions-runner:${RUNNER_VERSION}
 
 ARG JDK_MAJOR=21
