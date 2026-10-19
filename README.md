@@ -126,7 +126,7 @@ On small runners, limit Gradle in `~/.gradle/gradle.properties`, e.g.
 
 A build happens only when it is needed (`.github/scripts/resolve-versions.sh`):
 
-- **Weekly**, the workflow compares the newest version of the official runner image (its newest
+- **Weekly** (Fridays 04:20 UTC), the workflow compares the newest version of the official runner image (its newest
   `x.y.z` tag) with the newest version built here, and builds only if upstream is newer.
 - **Pushes to `master`** that change the image (Dockerfile, `rootfs/`, scripts, the workflow)
   always build, on the newest upstream version.

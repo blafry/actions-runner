@@ -10,8 +10,9 @@
 # For a private image, build with --build-arg BAKE_ANDROID_SDK=true to install it at build time.
 
 # Required: the upstream runner version to build on, e.g. --build-arg RUNNER_VERSION=2.x.y.
-# CI resolves it (.github/scripts/resolve-versions.sh); there is deliberately no default.
-ARG RUNNER_VERSION
+# CI resolves it (.github/scripts/resolve-versions.sh). The default is a valid but non-existent
+# tag, so a build without the argument fails with "...:required-build-arg: not found".
+ARG RUNNER_VERSION=required-build-arg
 FROM ghcr.io/actions/actions-runner:${RUNNER_VERSION}
 
 ARG JDK_MAJOR=21
