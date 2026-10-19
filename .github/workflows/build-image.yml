@@ -75,8 +75,8 @@ jobs:
             type=raw,value=${{ steps.upstream.outputs.version }}
             type=raw,value=${{ steps.upstream.outputs.version }}-{{date 'YYYYMMDD'}}
           labels: |
-            org.opencontainers.image.title=actions-runner-android
-            org.opencontainers.image.description=GitHub Actions runner image with a JDK and on-demand Android SDK setup
+            org.opencontainers.image.title=actions-runner
+            org.opencontainers.image.description=Self-hosted GitHub Actions runner image based on the official runner image, with extra build tooling
             org.opencontainers.image.base.name=${{ env.UPSTREAM }}:${{ steps.upstream.outputs.version }}
             org.opencontainers.image.base.digest=${{ steps.upstream.outputs.digest }}
 

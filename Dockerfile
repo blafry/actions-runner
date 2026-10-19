@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# GitHub Actions runner image for Android builds and device tests.
+# Self-hosted GitHub Actions runner image with extra build tooling.
 # Base: the official runner image (Ubuntu 24.04, user "runner", uid 1001).
 # Adds: Eclipse Temurin JDK, python3/zip/unzip, and on-demand Android SDK setup.
 #

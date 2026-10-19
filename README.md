@@ -1,11 +1,12 @@
-# actions-runner-android
+# actions-runner
 
-A GitHub Actions self-hosted runner image for Android builds and device tests, based on the
-official [`ghcr.io/actions/actions-runner`](https://github.com/actions/runner/pkgs/container/actions-runner)
-image.
+A self-hosted GitHub Actions runner image based on the official
+[`ghcr.io/actions/actions-runner`](https://github.com/actions/runner/pkgs/container/actions-runner)
+image, extended with build tooling: a JDK, common command-line tools, and on-demand Android SDK
+setup.
 
 ```
-ghcr.io/blafry/actions-runner-android:latest
+ghcr.io/blafry/actions-runner:latest
 ```
 
 ## What's inside
@@ -52,7 +53,7 @@ docker volume create android-sdk
 docker run -d --name runner \
   -v android-sdk:/home/runner/android-sdk \
   -v gradle-cache:/home/runner/.gradle \
-  ghcr.io/blafry/actions-runner-android:latest \
+  ghcr.io/blafry/actions-runner:latest \
   bash -c './config.sh --url https://github.com/<owner>/<repo> --token <registration-token> --unattended --ephemeral && ./run.sh'
 ```
 
@@ -67,7 +68,7 @@ template:
       fsGroup: 1001            # lets the runner write to the mounted volumes
     containers:
       - name: runner
-        image: ghcr.io/blafry/actions-runner-android:latest
+        image: ghcr.io/blafry/actions-runner:latest
         command: ["/home/runner/run.sh"]
         resources:
           requests: { cpu: "2", memory: 6Gi }
