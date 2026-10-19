@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Makes sure the Android SDK is installed in $ANDROID_HOME; does nothing when it already is.
+# Runs as the runner user before every job (ACTIONS_RUNNER_HOOK_JOB_STARTED) and can be run by hand.
+#
+# Configuration (environment):
+#   ANDROID_HOME            install location (keep it on a persistent volume)
+#   ANDROID_SDK_PACKAGES    space-separated packages in Android CLI syntax, e.g.
+#                           "platform-tools platforms/android-37.0 build-tools/36.0.0"
+#   CMDLINE_TOOLS_ZIP       command-line tools archive name on dl.google.com
+#   CMDLINE_TOOLS_SHA1      its SHA-1 (from Google's repository2-3.xml)
+#   ANDROID_SDK_SKIP=1      skip entirely (jobs that don't need Android)
+#
+# Installing packages with the Android CLI accepts the Android SDK Terms of Service
+# (https://developer.android.com/studio/terms). --no-metrics turns off the CLI's usage data.
+set -euo pipefail
+
+[[ "${ANDROID_SDK_SKIP:-0}" == "1" ]] && exit 0
+
+: "${ANDROID_HOME:?ANDROID_HOME is not set}"
+mkdir -p "$ANDROID_HOME" 2>/dev/null || true
+if [[ ! -w "$ANDROID_HOME" ]]; then
+  echo "ensure-android-sdk: $ANDROID_HOME is not writable by $(id -un); give the volume to uid $(id -u)" \
+    "(Kubernetes: securityContext.fsGroup: $(id -g))" >&2
+  exit 1
+fi
+CMDLINE_TOOLS_ZIP="${CMDLINE_TOOLS_ZIP:-commandlinetools-linux-16111833_latest.zip}"
+CMDLINE_TOOLS_SHA1="${CMDLINE_TOOLS_SHA1:-e025545c62a8e64c7559119566a569fb1dec5f60}"
+read -r -a packages <<<"${ANDROID_SDK_PACKAGES:-platform-tools}"
+
+cli="$ANDROID_HOME/cmdline-tools/latest/bin/android"
+if [[ ! -x "$cli" ]]; then
+  echo "ensure-android-sdk: installing Android command-line tools into $ANDROID_HOME"
+  tmp="$(mktemp -d)"
+  trap 'rm -rf "$tmp"' EXIT
+  curl -fsSL --proto '=https' --tlsv1.2 --retry 3 -o "$tmp/tools.zip" "https://dl.google.com/android/repository/$CMDLINE_TOOLS_ZIP"
+  echo "$CMDLINE_TOOLS_SHA1  $tmp/tools.zip" | sha1sum -c --quiet -
+  unzip -q "$tmp/tools.zip" -d "$tmp"
+  mkdir -p "$ANDROID_HOME/cmdline-tools"
+  rm -rf "$ANDROID_HOME/cmdline-tools/latest"
+  mv "$tmp/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+fi
+
+# A package "a/b/c" lives in $ANDROID_HOME/a/b/c; only missing ones are installed.
+missing=()
+for package in "${packages[@]}"; do
+  [[ -d "$ANDROID_HOME/$package" ]] || missing+=("$package")
+done
+if ((${#missing[@]})); then
+  echo "ensure-android-sdk: installing ${missing[*]}"
+  "$cli" --no-metrics --sdk="$ANDROID_HOME" sdk install "${missing[@]}"
+fi
